@@ -1,43 +1,27 @@
 {
   "name": "repo-access-sharer",
-  "version": "0.1.0",
-  "description": "Adds new service repositories to the customer dev team (webhook service_created)",
-  "license": "SEE LICENSE IN LICENSE",
+  "version": "1.0.0",
+  "description": "Receives Mia-Platform Console service_created webhooks and shares the new GitLab repository with a configured group",
   "main": "index.js",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
-    "checkonly": "! grep -R '\\.only' tests/",
-    "coverage": "npm run unit -- --coverage-report=text-summary",
-    "postcoverage": "tap --coverage-report=lcov --no-browser",
-    "lint": "eslint . --ignore-path=.gitignore",
-    "start": "lc39 index.js",
-    "start:local": "npm start -- --env-path ./default.env",
+    "start": "node index.js",
+    "lint": "eslint .",
+    "unit": "node --test \"test/**/*.test.js\"",
+    "checkonly": "! grep -RE \"\\.only\\(|only: true\" test/",
     "test": "npm run lint && npm run unit && npm run checkonly",
-    "update-docker-version": "sed -i.bck \"s|version=\\\"[0-9]*\\.[0-9]*\\.[0-9]*.*\\\"|version=\\\"${npm_package_version}\\\"|\" Dockerfile",
-    "update-changelog": "node ./scripts/update-changelog.js ${npm_package_version}",
-    "unit": "tap -b tests/*.test.js",
-    "version": "npm run update-changelog && npm run update-docker-version && rm -fr Dockerfile.bck && git add CHANGELOG.md Dockerfile"
+    "coverage": "c8 --reporter=text-summary --reporter=cobertura --reporter=lcov node --test \"test/**/*.test.js\"",
+    "send-test-webhook": "node scripts/send-test-webhook.js"
   },
   "dependencies": {
-    "@mia-platform/custom-plugin-lib": "^5.0.0"
+    "fastify": "^5.2.1"
   },
   "devDependencies": {
-    "@mia-platform/eslint-config-mia": "^3.0.0",
-    "eslint": "^8.17.0",
-    "nock": "^13.2.6",
-    "pre-commit": "^1.2.2",
-    "tap": "^16.2.0"
-  },
-  "engines": {
-    "node": ">=16"
-  },
-  "private": true,
-  "eslintConfig": {
-    "extends": "@mia-platform/eslint-config-mia"
-  },
-  "tap": {
-    "branches": 100,
-    "lines": 100,
-    "functions": 100,
-    "statements": 100
+    "c8": "^12.0.0",
+    "eslint": "^9.39.5",
+    "neostandard": "^0.14.1"
   }
 }
